@@ -53,6 +53,16 @@ function sleep(ms) {
   return new Promise(function(resolve) { setTimeout(resolve, ms); });
 }
 
+/* Convert file to base64 */
+function toBase64(file) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload  = function() { resolve(reader.result.split(',')[1]); };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 async function analyze() {
   var endpoint = document.getElementById('endpoint').value.trim().replace(/\/+$/, '');
   var apiKey   = document.getElementById('apiKey').value.trim();
@@ -70,30 +80,47 @@ async function analyze() {
       if (!docUrl) { showError('Please enter a document URL.'); return; }
       body        = JSON.stringify({ urlSource: docUrl });
       contentType = 'application/json';
+
     } else {
       if (!selectedFile) { showError('Please select a file to upload.'); return; }
-      body        = await selectedFile.arrayBuffer();
-      contentType = selectedFile.type || 'application/octet-stream';
+
+      setLoading('Reading file...');
+
+      /* Convert to base64 and send as JSON — fixes CORS on GitHub Pages */
+      var base64 = await toBase64(selectedFile);
+      var mimeType = selectedFile.type || 'application/octet-stream';
+
+      body = JSON.stringify({
+        base64Source: base64
+      });
+      contentType = 'application/json';
     }
 
-    var submitUrl = endpoint + '/documentintelligence/documentModels/prebuilt-read:analyze?api-version=2024-11-30';
+    var submitUrl = endpoint
+      + '/documentintelligence/documentModels/prebuilt-read:analyze'
+      + '?api-version=2024-11-30';
 
     setLoading('Submitting document...');
     var submitRes = await fetch(submitUrl, {
       method: 'POST',
-      headers: { 'Ocp-Apim-Subscription-Key': apiKey, 'Content-Type': contentType },
+      headers: {
+        'Ocp-Apim-Subscription-Key': apiKey,
+        'Content-Type': contentType
+      },
       body: body
     });
 
     if (!submitRes.ok) {
       var errData = {};
       try { errData = await submitRes.json(); } catch(e) {}
-      var msg = (errData.error && errData.error.message) ? errData.error.message : ('HTTP ' + submitRes.status + ' — ' + submitRes.statusText);
+      var msg = (errData.error && errData.error.message)
+        ? errData.error.message
+        : ('HTTP ' + submitRes.status + ' — ' + submitRes.statusText);
       throw new Error(msg);
     }
 
     var operationUrl = submitRes.headers.get('Operation-Location') || submitRes.headers.get('operation-location');
-    if (!operationUrl) throw new Error('No Operation-Location returned.');
+    if (!operationUrl) throw new Error('No Operation-Location returned. Check your endpoint URL.');
 
     var result = null;
     for (var i = 0; i < 60; i++) {
