@@ -61,7 +61,8 @@ Then open: `http://localhost:5500/index.html`
 
 ## 📸 Preview
 
-> Dark themed UI with credential inputs, file upload, and structured results display.
+<img width="1918" height="868" alt="image" src="https://github.com/user-attachments/assets/c0d81473-28de-4c95-9bee-8b2505690344" />
+
 
 ---
 
