@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Azure Document Intelligence</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap');
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge"><span class="badge-dot"></span> Azure AI</div>
+    <h1>Document<br/><em>Intelligence</em></h1>
+    <p class="subtitle">Extract text, tables &amp; key-value pairs from any document</p>
+  </div>
+
+  <!-- CREDENTIALS CARD -->
+  <div class="card" style="animation-delay:0.05s">
+    <div class="card-label">01 — Credentials</div>
+    <div class="input-row">
+      <div class="field">
+        <label for="endpoint">Endpoint URL</label>
+        <input type="text" id="endpoint" placeholder="https://your-resource.cognitiveservices.azure.com/" />
+      </div>
+      <div class="field">
+        <label for="apiKey">API Key</label>
+        <input type="password" id="apiKey" placeholder="Your Azure API Key" />
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCUMENT SOURCE CARD -->
+  <div class="card" style="animation-delay:0.1s">
+    <div class="card-label">02 — Document Source</div>
+
+    <div class="toggle-row" id="source-tabs">
+      <button class="toggle-btn active" onclick="switchTab('url', this)">🔗 URL</button>
+      <button class="toggle-btn" onclick="switchTab('file', this)">📁 File Upload</button>
+    </div>
+
+    <div id="tab-url">
+      <div class="field">
+        <label for="docUrl">Document URL</label>
+        <input type="text" id="docUrl"
+          value="https://raw.githubusercontent.com/Azure-Samples/cognitive-services-REST-api-samples/master/curl/form-recognizer/sample-layout.pdf"
+          placeholder="https://..." />
+      </div>
+    </div>
+
+    <div id="tab-file" style="display:none">
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg,.tiff,.bmp" onchange="handleFile(this)" />
+        <div class="drop-icon">📄</div>
+        <div class="drop-text">
+          <strong>Click to upload</strong> or drag &amp; drop<br/>
+          PDF, PNG, JPG, TIFF, BMP
+        </div>
+        <div id="fileName"></div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:20px; margin-bottom:0">
+      <label>Analysis Model</label>
+      <div class="toggle-row" id="model-tabs">
+        <button class="toggle-btn active" onclick="selectModel('prebuilt-layout', this)">prebuilt-layout</button>
+        <button class="toggle-btn" onclick="selectModel('prebuilt-read', this)">prebuilt-read</button>
+        <button class="toggle-btn" onclick="selectModel('prebuilt-document', this)">prebuilt-document</button>
+        <button class="toggle-btn" onclick="selectModel('prebuilt-invoice', this)">prebuilt-invoice</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYZE BUTTON -->
+  <button class="btn-analyze" id="analyzeBtn" onclick="analyze()">
+    ✦ Analyze Document
+  </button>
+
+  <!-- ERROR -->
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- LOADING -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Connecting to Azure...</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+
+    <div class="card result-section" style="margin-top:20px">
+      <div class="card-label">Key-Value Pairs</div>
+      <div id="kvContent"></div>
+    </div>
+
+    <div class="card result-section">
+      <div class="card-label">Tables</div>
+      <div id="tableContent"></div>
+    </div>
+
+    <div class="card result-section">
+      <div class="card-label">Paragraphs &amp; Text</div>
+      <div id="paraContent"></div>
+    </div>
+
+    <div class="card result-section">
+      <div class="card-label">Pages Summary</div>
+      <div id="pageContent"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
