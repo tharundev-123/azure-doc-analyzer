@@ -69,7 +69,7 @@ Then open: `http://localhost:5500/index.html`
 ## 👨‍💻 Author
 
 **Tharun** — BTech CSE (AI & ML), Chandigarh University  
-[GitHub](https://github.com/tharundev-123) • [LinkedIn](https://linkedin.com/in/tharundev)
+[GitHub](https://github.com/tharundev-123) • [LinkedIn](https://linkedin.com/in/tharundevmc)
 
 ---
 
